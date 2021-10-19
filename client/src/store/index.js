@@ -316,12 +316,18 @@ export const useGlobalStore = () => {
     }
 
     store.setMarkedForDeletion = function (id, name) {
-        let pair = [id, name];
-        console.log(pair);
-        storeReducer({
-            type: GlobalStoreActionType.LIST_MARKED_FOR_DELETE,
-            payload: pair
-        })
+        async function asyncMarkDelete(id) {
+            let response = await api.getTop5ListById(id);
+            if (response.data.success){
+                let top5List = response.data.top5List;
+                // console.log(pair);
+                storeReducer({
+                    type: GlobalStoreActionType.LIST_MARKED_FOR_DELETE,
+                    payload: top5List
+                })
+            }
+        }
+        asyncMarkDelete(id);
     }
 
     store.deleteMarkedList = function () {

@@ -13,7 +13,7 @@ function DeleteModal() {
     const { store } = useContext(GlobalStoreContext);
     let name = "";
     if (store.listMarkedForDeletion) {
-        name = store.listMarkedForDeletion[1];
+        name = store.listMarkedForDeletion.name;
         console.log(store.listMarkedForDeletion);
     }
     function handleDeleteList(event) {
