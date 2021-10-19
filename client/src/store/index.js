@@ -232,10 +232,12 @@ export const useGlobalStore = () => {
     store.addMoveItemTransaction = function (start, end) {
         let transaction = new MoveItem_Transaction(store, start, end);
         tps.addTransaction(transaction);
+        store.updateButtons();
     }
     store.addEditItemTransaction = function (ind, init, end) {
         let transaction = new ChangeItem_Transaction(store, ind, init, end);
         tps.addTransaction(transaction);
+        store.updateButtons();
     }
     store.moveItem = function (start, end) {
         start -= 1;
@@ -256,14 +258,10 @@ export const useGlobalStore = () => {
         }
 
         // NOW MAKE IT OFFICIAL
-        document.getElementById("undo-button").className = "top5-button";
-        document.getElementById("undo-button").disabled = false;
         store.updateCurrentList();
     }
     store.editItem = function (id, text) {
         store.currentList.items[id] = text;
-        document.getElementById("undo-button").className = "top5-button";
-        document.getElementById("undo-button").disabled = false;
         store.updateCurrentList();
     }
     store.updateCurrentList = function() {
@@ -331,7 +329,7 @@ export const useGlobalStore = () => {
 
     store.deleteMarkedList = function () {
         async function deleteMarkedListAsync() {
-            let resp = await deleteTop5ListById(store.listMarkedForDeletion._id).then(store.loadIdNamePairs).catch(store.loadIdNamePairs);
+            let resp = await deleteTop5ListById(store.listMarkedForDeletion._id).then(store.loadIdNamePairs()).catch(store.loadIdNamePairs());
         }
         deleteMarkedListAsync();
     }

@@ -24,7 +24,9 @@ function Top5Item(props) {
     }
 
     let handleBlur = (event) => {
-        store.addEditItemTransaction(index, props.text, text);
+        if (props.text !== text){
+            store.addEditItemTransaction(index, props.text, text);
+        }
         editHandler(event);
     }
 

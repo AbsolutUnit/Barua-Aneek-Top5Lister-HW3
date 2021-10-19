@@ -41,10 +41,14 @@ function ListCard(props) {
 
     function handleKeyPress(event) {
         if (event.code === "Enter") {
-            let id = event.target.id.substring("list-".length);
-            store.changeListName(id, text);
-            toggleEdit();
+            handleBlur(event);
         }
+    }
+
+    function handleBlur(event) {
+        let id = event.target.id.substring("list-".length);
+        store.changeListName(id, text);
+        toggleEdit();
     }
 
     function deleteHandler(ev) {
@@ -103,6 +107,7 @@ function ListCard(props) {
                 type='text'
                 onKeyPress={handleKeyPress}
                 onChange={handleUpdateText}
+                onBlur={handleBlur}
                 defaultValue={idNamePair.name}
             />;
     }
