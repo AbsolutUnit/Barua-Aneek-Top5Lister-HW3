@@ -49,14 +49,14 @@ function ListCard(props) {
 
     function deleteHandler(ev) {
         ev.stopPropagation();
-        let name = ev.target.parentNode.textContext;
+        let name = ev.target.parentNode.text;
         let id = ev.target.id.substring("delete-list-".length);
         store.setMarkedForDeletion(id, name);
         document.getElementById("delete-modal").classList.add("is-visible");
     }
 
     function handleUpdateText(event) {
-        setText(event.target.value );
+        setText(event.target.value);
     }
 
     let selectClass = "unselected-list-card";

@@ -14,9 +14,11 @@ function DeleteModal() {
     let name = "";
     if (store.listMarkedForDeletion) {
         name = store.listMarkedForDeletion[1];
+        console.log(store.listMarkedForDeletion);
     }
     function handleDeleteList(event) {
         store.deleteMarkedList();
+        document.getElementById("delete-modal").classList.remove("is-visible");
     }
     function handleCloseModal(event) {
         document.getElementById("delete-modal").classList.remove("is-visible");
