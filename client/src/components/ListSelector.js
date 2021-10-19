@@ -26,10 +26,16 @@ const ListSelector = () => {
             />
         ))
     }
+    let addClickHandler = () => {
+        if (store) {
+            store.addNewList();
+        }
+    }
     return (
         <div id="top5-list-selector">
             <div id="list-selector-heading">
                 <input
+                    onClick = {addClickHandler}
                     type="button"
                     id="add-list-button"
                     className="top5-button"

@@ -13,11 +13,11 @@ export const GlobalStoreContext = createContext({});
 // THESE ARE ALL THE TYPES OF UPDATES TO OUR GLOBAL
 // DATA STORE STATE THAT CAN BE PROCESSED
 export const GlobalStoreActionType = {
+    ADD_NEW_LIST: "ADD_NEW_LIST",
     CHANGE_LIST_NAME: "CHANGE_LIST_NAME",
     CLOSE_CURRENT_LIST: "CLOSE_CURRENT_LIST",
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
-    SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -30,7 +30,7 @@ export const useGlobalStore = () => {
     const [store, setStore] = useState({
         idNamePairs: [],
         currentList: null,
-        newListCounter: 0,
+        newListCounter: [0],
         listNameActive: false,
         itemActive: false,
         listMarkedForDeletion: null
@@ -95,6 +95,26 @@ export const useGlobalStore = () => {
                     isItemEditActive: false,
                     listMarkedForDeletion: null
                 });
+            }
+            case GlobalStoreActionType.ADD_NEW_LIST: {
+                return setStore({
+                    idNamePairs: payload,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter + 1,
+                    isListNameEditActive: false,
+                    isItemEditActive: false,
+                    listMarkedForDeletion: null
+                })
+            }
+            case GlobalStoreActionType.INCREMENT_LIST_COUNT: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    isListNameEditActive: false,
+                    isItemEditActive: false,
+                    listMarkedForDeletion: false,
+                    newListCounter: payload
+                })
             }
             default:
                 return store;
@@ -235,6 +255,18 @@ export const useGlobalStore = () => {
             type: GlobalStoreActionType.SET_LIST_NAME_EDIT_ACTIVE,
             payload: null
         });
+    }
+
+    store.addNewList = function () {
+        async function asyncCreateNewList() {
+            const resp = await api.createTop5List({
+                "name": "Untitled" + store.newListCounter,
+                "items": ["?", "?", "?", "?", "?"]
+            })
+            store.setCurrentList(resp.data.top5List._id)
+            store.newListCounter[0] = store.newListCounter[0] + 1;
+        }
+        asyncCreateNewList();
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
