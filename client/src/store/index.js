@@ -1,6 +1,6 @@
 import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
-import api from '../api'
+import api, { deleteTop5ListById } from '../api'
 import MoveItem_Transaction from '../transactions/MoveItem_Transaction'
 import ChangeItem_Transaction from '../transactions/ChangeItem_Transaction'
 export const GlobalStoreContext = createContext({});
@@ -186,15 +186,22 @@ export const useGlobalStore = () => {
     store.loadIdNamePairs = function () {
         async function asyncLoadIdNamePairs() {
             const response = await api.getTop5ListPairs();
-            if (response.data.success) {
-                let pairsArray = response.data.idNamePairs;
+            let pairsArray = [];
+            try {
+                const resp = await api.getTop5ListPairs();
+                if (resp.data.success){
+                    pairsArray = response.data.idNamePairs;
+                    storeReducer({
+                        type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                        payload: pairsArray
+                    });
+                }
+            }
+            catch (error) {
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
                     payload: pairsArray
                 });
-            }
-            else {
-                console.log("API FAILED TO GET THE LIST PAIRS");
             }
         }
         asyncLoadIdNamePairs();
@@ -315,27 +322,18 @@ export const useGlobalStore = () => {
         asyncCreateNewList();
     }
 
-    store.setMarkedForDeletion = function (id, name) {
-        async function asyncMarkDelete(id) {
-            let response = await api.getTop5ListById(id);
-            if (response.data.success){
-                let top5List = response.data.top5List;
-                // console.log(pair);
-                storeReducer({
-                    type: GlobalStoreActionType.LIST_MARKED_FOR_DELETE,
-                    payload: top5List
-                })
-            }
-        }
-        asyncMarkDelete(id);
+    store.setMarkedForDeletion = function (idNamePair) {
+        storeReducer({
+            type: GlobalStoreActionType.LIST_MARKED_FOR_DELETE,
+            payload: idNamePair
+        });
     }
 
     store.deleteMarkedList = function () {
-        const deleteResp = api.deleteTop5ListById(
-            store.listMarkedForDeletion[0]
-        );
-        store.loadIdNamePairs();
-        store.updateButtons();
+        async function deleteMarkedListAsync() {
+            let resp = await deleteTop5ListById(store.listMarkedForDeletion._id).then(store.loadIdNamePairs).catch(store.loadIdNamePairs);
+        }
+        deleteMarkedListAsync();
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
