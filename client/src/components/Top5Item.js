@@ -10,6 +10,28 @@ function Top5Item(props) {
     const { store } = useContext(GlobalStoreContext);
     const [draggedTo, setDraggedTo] = useState(0);
 
+    const[editActive, setEdit] = useState(false);
+    const[text, setText] = useState(props.text);
+
+    let editHandler = () => {
+        setEdit(!editActive);
+    }
+
+    let enterPress = (event) => {
+        if (event.code === "Enter") {
+            handleBlur(event);
+        }
+    }
+
+    let handleBlur = (event) => {
+        store.addEditItemTransaction(index, props.text, text);
+        editHandler(event);
+    }
+
+    let update = (event) => {
+        setText(event.target.value);
+    }
+
     function handleDragStart(event) {
         event.dataTransfer.setData("item", event.target.id);
     }
@@ -46,6 +68,19 @@ function Top5Item(props) {
     if (draggedTo) {
         itemClass = "top5-item-dragged-to";
     }
+    if (editActive) {
+        return(
+            <input
+                id = {'edit-item-' + (index + 1)}
+                className = {itemClass}
+                type = "text"
+                onKeyPress = {enterPress}
+                onBlur = {handleBlur}
+                onChange = {update}
+                defaultValue = {props.text}
+                />
+        )
+    }
     return (
         <div
             id={'item-' + (index + 1)}
@@ -62,6 +97,7 @@ function Top5Item(props) {
                 id={"edit-item-" + index + 1}
                 className="list-card-button"
                 value={"\u270E"}
+                onClick = {editHandler}
             />
             {props.text}
         </div>)

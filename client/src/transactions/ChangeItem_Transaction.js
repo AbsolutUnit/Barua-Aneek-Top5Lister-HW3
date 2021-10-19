@@ -1,25 +1,28 @@
 import jsTPS_Transaction from "../common/jsTPS.js"
+
 /**
- * MoveItem_Transaction
+ * ChangeItem_Transaction
  * 
- * This class represents a transaction that works with drag
- * and drop. It will be managed by the transaction stack.
-    
-    @author McKilla Gorilla
+ * This class represents a transaction that updates the text
+ * for a given item. It will be managed by the transaction stack.
+ * 
+ * @author McKilla Gorilla
+ * @author ?
  */
-export default class MoveItem_Transaction extends jsTPS_Transaction {
-    constructor(initStore, initOldIndex, initNewIndex) {
+export default class ChangeItem_Transaction extends jsTPS_Transaction {
+    constructor(initStore, initId, initOldText, initNewText) {
         super();
         this.store = initStore;
-        this.oldItemIndex = initOldIndex;
-        this.newItemIndex = initNewIndex;
+        this.id = initId;
+        this.oldText = initOldText;
+        this.newText = initNewText;
     }
 
     doTransaction() {
-        this.store.moveItem(this.oldItemIndex, this.newItemIndex);
+        this.store.editItem(this.id, this.newText);
     }
-    
+
     undoTransaction() {
-        this.store.moveItem(this.newItemIndex, this.oldItemIndex);
+        this.store.editItem(this.id, this.oldText);
     }
 }
