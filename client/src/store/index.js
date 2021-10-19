@@ -19,6 +19,7 @@ export const GlobalStoreActionType = {
     CLOSE_CURRENT_LIST: "CLOSE_CURRENT_LIST",
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
+    LIST_MARKED_FOR_DELETE: "LIST_MARKED_FOR_DELETE"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -101,7 +102,7 @@ export const useGlobalStore = () => {
                 return setStore({
                     idNamePairs: payload,
                     currentList: store.currentList,
-                    newListCounter: store.newListCounter + 1,
+                    newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: false,
                     listMarkedForDeletion: null
@@ -115,6 +116,16 @@ export const useGlobalStore = () => {
                     isItemEditActive: false,
                     listMarkedForDeletion: false,
                     newListCounter: payload
+                })
+            }
+            case GlobalStoreActionType.LIST_MARKED_FOR_DELETE: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    isListNameEditActive: false,
+                    isItemEditActive: false,
+                    listMarkedForDeletion: payload,
+                    newListCounter: store.newListCounter
                 })
             }
             default:
@@ -277,6 +288,14 @@ export const useGlobalStore = () => {
             store.newListCounter[0] = store.newListCounter[0] + 1;
         }
         asyncCreateNewList();
+    }
+
+    store.setMarkedForDeletion = function (id, name) {
+        let pair = [id, name];
+        storeReducer({
+            type: GlobalStoreActionType.LIST_MARKED_FOR_DELETE,
+            payload: pair
+        })
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT

@@ -47,6 +47,14 @@ function ListCard(props) {
         }
     }
 
+    function deleteHandler(ev) {
+        ev.stopPropagation();
+        let name = ev.target.parentNode.textContext;
+        let id = ev.target.id.substring("delete-list-".length);
+        store.setMarkedForDeletion(id, name);
+        document.getElementById("delete-modal").classList.add("is-visible");
+    }
+
     function handleUpdateText(event) {
         setText(event.target.value );
     }
@@ -77,6 +85,7 @@ function ListCard(props) {
                 id={"delete-list-" + idNamePair._id}
                 className="list-card-button"
                 value={"\u2715"}
+                onClick = {deleteHandler}
             />
             <input
                 disabled={cardStatus}
