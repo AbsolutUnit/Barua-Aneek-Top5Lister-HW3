@@ -47,7 +47,9 @@ function ListCard(props) {
 
     function handleBlur(event) {
         let id = event.target.id.substring("list-".length);
+        // if (text !== idNamePair.name){
         store.changeListName(id, text);
+        // }
         toggleEdit();
     }
 

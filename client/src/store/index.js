@@ -146,25 +146,61 @@ export const useGlobalStore = () => {
         async function asyncChangeListName(id) {
             let response = await api.getTop5ListById(id);
             if (response.data.success) {
+                console.log("success 1");
                 let top5List = response.data.top5List;
                 top5List.name = newName;
                 async function updateList(top5List) {
-                    response = await api.updateTop5ListById(top5List._id, top5List);
-                    if (response.data.success) {
-                        async function getListPairs(top5List) {
-                            response = await api.getTop5ListPairs();
-                            if (response.data.success) {
-                                let pairsArray = response.data.idNamePairs;
-                                storeReducer({
-                                    type: GlobalStoreActionType.CHANGE_LIST_NAME,
-                                    payload: {
-                                        idNamePairs: pairsArray,
-                                        top5List: top5List
-                                    }
-                                });
-                            } 
+                    try {
+                        response = await api.updateTop5ListById(top5List._id, top5List);
+                        if (response.data.success) {
+                            console.log("success 2");
+                            async function getListPairs(top5List) {
+                                response = await api.getTop5ListPairs();
+                                if (response.data.success) {
+                                    let pairsArray = response.data.idNamePairs;
+                                    storeReducer({
+                                        type: GlobalStoreActionType.CHANGE_LIST_NAME,
+                                        payload: {
+                                            idNamePairs: pairsArray,
+                                            top5List: top5List
+                                        }
+                                    });
+                                } 
+                            }
+                            getListPairs(top5List);
+                        } else {
+                            async function getListPairs(top5List) {
+                                try {
+                                    response = await api.getTop5ListPairs();
+                                    if (response.data.success) {
+                                        let pairsArray = response.data.idNamePairs;
+                                        storeReducer({
+                                            type: GlobalStoreActionType.CHANGE_LIST_NAME,
+                                            payload: {
+                                                idNamePairs: pairsArray,
+                                                top5List: top5List
+                                            }
+                                        });
+                                    } 
+                                } catch (error) {
+                                    storeReducer({
+                                        type: GlobalStoreActionType.CHANGE_LIST_NAME,
+                                        payload: {
+                                            idNamePairs: store.idNamePairs,
+                                            top5List: top5List
+                                        }
+                                    });
+                                } 
+                            }
                         }
-                        getListPairs(top5List);
+                    } catch (err0r) {
+                        storeReducer({
+                            type: GlobalStoreActionType.CHANGE_LIST_NAME,
+                            payload: {
+                                idNamePairs: store.idNamePairs,
+                                top5List: top5List
+                            }
+                        });
                     }
                 }
                 updateList(top5List);
@@ -329,7 +365,12 @@ export const useGlobalStore = () => {
 
     store.deleteMarkedList = function () {
         async function deleteMarkedListAsync() {
-            let resp = await deleteTop5ListById(store.listMarkedForDeletion._id).then(store.loadIdNamePairs()).catch(store.loadIdNamePairs());
+            try{
+                let resp = await deleteTop5ListById(store.listMarkedForDeletion._id)
+                store.loadIdNamePairs();
+            } catch (error) {
+                store.loadIdNamePairs();
+            }
         }
         deleteMarkedListAsync();
     }
